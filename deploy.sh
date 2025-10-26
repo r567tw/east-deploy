@@ -3,18 +3,22 @@
 set -e  # 發生錯誤時停止執行
 
 APP_DIR="/var/www/${APP_NAME}"  # 請依實際專案路徑修改
+DEPLOY_USER="deploy"
 
 # echo "[$(date +'%Y-%m-%d %H:%M:%S')] Start deploying..." >> /home/deploy/deploy.log
 
 # 進入 Laravel 專案資料夾
 cd $APP_DIR
+sudo chown -R deploy:deploy . # 權限有夠麻煩
 
 # 拉最新程式碼
 # sudo -u www-data git pull origin main >> /home/deploy/deploy.log 2>&1
-sudo -n -u www-data git pull origin main
+git reset --hard
+git pull
 
 # 安裝 Composer 套件（使用 www-data 執行）
 # sudo -u www-data composer install --no-interaction --prefer-dist --optimize-autoloader >> /home/deploy/deploy.log 2>&
+sudo chown -R www-data:www-data . # 權限有夠麻煩
 sudo -n -u www-data composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
 # 設定權限（重要，確保 Laravel 可寫入）
